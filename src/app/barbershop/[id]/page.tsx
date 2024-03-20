@@ -1,9 +1,7 @@
-import { Button } from "@/app/_components/ui/button";
 import { db } from "@/app/lib/prisma";
-import { ChevronLeftIcon, MapPin, MenuIcon, StarIcon } from "lucide-react";
-import Image from "next/image";
 import BarbershopInfo from "./_components/barbershop-info";
 import ServiceItem from "./_components/service-item";
+import { Badge } from "@/app/_components/ui/badge";
 
 //criando a interface para que possamos pegar os atributos do model Barbershop
 interface BarbershopDetailsPageProps {
@@ -47,7 +45,15 @@ const BarbershopDetailsPage = async ({
     <div>
       <BarbershopInfo barbershop={barbershop} />
       <hr />
-      <h2 className="font-bold text-xl pl-5 pt-4 text-primary uppercase">Serviços</h2>
+      <div className="flex items-center justify-center">
+        <Badge
+          variant="outline"
+          className="font-bold text-gray-200 uppercase mt-4 mx-5"
+        >
+          Serviços
+        </Badge>
+      </div>
+
       <div className="flex flex-col gap-4 px-5 py-6">
         {/* MAP DE SERVICOS DA BARBERSHOP */}
         {barbershop.Service.map((service) => (
