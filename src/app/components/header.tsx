@@ -1,9 +1,19 @@
+"use client"
+
 import Image from "next/image";
 import { Card, CardContent } from "../_components/ui/card";
 import { Button } from "../_components/ui/button";
 import { MenuIcon } from "lucide-react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const Header = () => {
+  // use session para pegar o usuario autenticado
+  const {data} = useSession()
+
+  const handleLoginClick = async () => {
+    await signIn();
+  }
+
   return (
     <div>
       <Card>
