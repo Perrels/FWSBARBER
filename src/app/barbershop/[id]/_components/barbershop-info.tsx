@@ -11,8 +11,8 @@ interface BarbershopInfoProps {
 }
 
 const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
-  const router = useRouter();
-
+  const router = useRouter(); //setando o router 
+  //função de voltar
   const handleBackClick = () => {
     router.back();
   };
@@ -22,7 +22,7 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
       {/* CLASSE HEADER ONDE FICA A IMAGEM E OS BOTÕES DE NAVEGAÇÃO */}
       <div className="h-[30vh] w-full relative">
         {/* BOTÃO DE VOLTAR */}
-        <Button onClick={handleBackClick}
+        <Button onClick={handleBackClick} //chamada da função para voltar no botão 
           size={"icon"}
           className="absolute z-50 top-3 left-3"
           variant="outline"
