@@ -2,6 +2,8 @@ import { db } from "@/app/lib/prisma";
 import BarbershopInfo from "./_components/barbershop-info";
 import ServiceItem from "./_components/service-item";
 import { Badge } from "@/app/_components/ui/badge";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 //criando a interface para que possamos pegar os atributos do model Barbershop
 interface BarbershopDetailsPageProps {
@@ -16,6 +18,10 @@ interface BarbershopDetailsPageProps {
 const BarbershopDetailsPage = async ({
   params,
 }: BarbershopDetailsPageProps) => {
+
+  //pegando a sessão do usuario num server component
+  const session = await getServerSession(authOptions);
+
   //condicional para verificar se existe o id
   if (!params.id) {
     // TODO redirecionar para a home page e exibir alerta que o id não existe
@@ -57,7 +63,7 @@ const BarbershopDetailsPage = async ({
       <div className="flex flex-col gap-4 px-5 py-6">
         {/* MAP DE SERVICOS DA BARBERSHOP */}
         {barbershop.Service.map((service) => (
-          <ServiceItem key={service.id} service={service} />
+          <ServiceItem key={service.id} service={service} isAuthenticated={!!session?.user} />
         ))}
       </div>
     </div>

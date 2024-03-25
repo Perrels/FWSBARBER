@@ -16,7 +16,7 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
   const router = useRouter(); //setando o router
   //função de voltar
   const handleBackClick = () => {
-    router.back();
+    router.replace("/");
   };
 
   return (
@@ -49,7 +49,7 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
             <SideMenu />
           </SheetContent>
         </Sheet>
-        
+
         {/* IMAGEM HEADER */}
         <Image
           src={barbershop.imageUrl}
