@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "@/app/_components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
+import SideMenu from "@/app/_components/ui/side-menu";
 import { Barbershop } from "@prisma/client";
 import { ChevronLeftIcon, MapPin, MenuIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +13,7 @@ interface BarbershopInfoProps {
 }
 
 const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
-  const router = useRouter(); //setando o router 
+  const router = useRouter(); //setando o router
   //função de voltar
   const handleBackClick = () => {
     router.back();
@@ -22,21 +24,32 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
       {/* CLASSE HEADER ONDE FICA A IMAGEM E OS BOTÕES DE NAVEGAÇÃO */}
       <div className="h-[30vh] w-full relative">
         {/* BOTÃO DE VOLTAR */}
-        <Button onClick={handleBackClick} //chamada da função para voltar no botão 
+        <Button
+          onClick={handleBackClick} //chamada da função para voltar no botão
           size={"icon"}
           className="absolute z-50 top-3 left-3"
           variant="outline"
         >
           <ChevronLeftIcon />
         </Button>
-        {/* BOTÃO DE MENU */}
-        <Button
-          size={"icon"}
-          className="absolute z-50 top-3 right-3"
-          variant="outline"
-        >
-          <MenuIcon />
-        </Button>
+
+        <Sheet>
+          <SheetTrigger>
+            {/* BOTÃO DE MENU */}
+            <Button
+              size={"icon"}
+              className="absolute z-50 top-3 right-3"
+              variant="outline"
+            >
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="p-0">
+            {/*CHAMANDO NOSSO NOVO COMPONENTE DE MENU LATERAL*/}
+            <SideMenu />
+          </SheetContent>
+        </Sheet>
+        
         {/* IMAGEM HEADER */}
         <Image
           src={barbershop.imageUrl}
