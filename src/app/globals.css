@@ -34,6 +34,29 @@
 
     --radius: 0.5rem;
   }
+
+  /* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 0.5rem;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: 225 9% 9%;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: 228 6% 16%;
+}
 }
 
 @layer base {
