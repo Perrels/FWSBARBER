@@ -12,11 +12,13 @@ import {
 } from "@/app/_components/ui/sheet";
 import { Barbershop, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
 import { generateDayTime } from "../helpers/hours";
-import { format } from "date-fns";
+import { format, setHours, setMinutes } from "date-fns";
+import { saveBooking } from "../actions/save-bookings";
+import { Loader2 } from "lucide-react";
 
 interface ServiceItemProps {
   barbershop: Barbershop;
@@ -24,13 +26,20 @@ interface ServiceItemProps {
   isAuthenticated?: boolean;
 }
 
-const ServiceItem = ({ service, isAuthenticated, barbershop }: ServiceItemProps) => {
+const ServiceItem = ({
+  service,
+  isAuthenticated,
+  barbershop,
+}: ServiceItemProps) => {
+  const { data } = useSession();
+
+  const [isLoading, setSubmitIsLoading] = useState(false);
+
   //função para caso o user não estiver logado redirecione para o login
   const handleBookingClick = () => {
     if (!isAuthenticated) {
       return signIn("google");
     }
-
     // TODO abrir modal de agendamento
   };
   // armazenando a data selecionada no calendario
@@ -52,6 +61,42 @@ const ServiceItem = ({ service, isAuthenticated, barbershop }: ServiceItemProps)
   const timeList = useMemo(() => {
     return date ? generateDayTime(date) : [];
   }, [date]);
+
+  //funcao de salvar a reserva na tabela booking
+  const handleBookingSubmit = async () => {
+    setSubmitIsLoading(true);
+    try {
+      //verificar que a hora e o dia estão selecionados
+      if (!hour || !date || !data?.user) {
+        // caso não estejam retorne TODO ALERTA PARA SELIONAR HORA E DATA
+        return;
+      }
+
+      //arrumando a data para armazenar no banco de forma correta
+      const hourBooking = Number(hour.split(":")[0]); //pegando a hora da reserva
+      const minuteBooking = Number(hour.split(":")[1]); // pegando o minuto da reserva
+      //concatenando as horas com a data
+      const dateHourBooking = setMinutes(
+        setHours(date, hourBooking),
+        minuteBooking
+      );
+
+      //chamando funcão saveBooking src\app\barbershop\[id]\actions\save-bookings.ts
+      await saveBooking({
+        serviceId: service.id,
+        barbershopId: barbershop.id,
+        date: dateHourBooking,
+        userId: (data.user as any).id,
+      });
+      alert(
+        `Reserva do servico ${service.name} com sucesso para o cliente ${data.user.name}`
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSubmitIsLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -98,7 +143,7 @@ const ServiceItem = ({ service, isAuthenticated, barbershop }: ServiceItemProps)
                       mode="single"
                       selected={date}
                       onSelect={handleDateClick}
-                      className="rounded-md border capitalize border-none mt-6"
+                      className="rounded-md border capitalize border-none mt-6 min-w-[100%]"
                       fromDate={new Date()}
                       locale={ptBR}
                       styles={{
@@ -178,7 +223,14 @@ const ServiceItem = ({ service, isAuthenticated, barbershop }: ServiceItemProps)
                     </div>
                     {/* FIM card info do servico */}
                     <SheetFooter className="px-5">
-                      <Button className="w-full" disabled={!date || !hour}>Confirmar reserva</Button>
+                      <Button
+                        onClick={handleBookingSubmit}
+                        className="w-full"
+                        disabled={(!date || !hour) || isLoading}
+                      >
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Confirmar reserva
+                      </Button>
                     </SheetFooter>
                   </SheetContent>
                 </Sheet>
