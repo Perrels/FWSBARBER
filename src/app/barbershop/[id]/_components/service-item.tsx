@@ -10,17 +10,18 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/app/_components/ui/sheet";
-import { Barbershop, Service } from "@prisma/client";
+import { Barbershop, Booking, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { generateDayTime } from "../helpers/hours";
 import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../actions/save-bookings";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getDayBooking } from "../actions/get-day-bookings";
 
 interface ServiceItemProps {
   barbershop: Barbershop;
@@ -34,12 +35,34 @@ const ServiceItem = ({
   barbershop,
 }: ServiceItemProps) => {
   //router
-  const router = useRouter()
+  const router = useRouter();
   const { data } = useSession();
+  // armazenando a data selecionada no calendario
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  //armazenando o horário selecionado
+  const [hour, setHour] = useState<string | undefined>();
   // verificar se os dados foram carregados no submit
   const [isLoading, setSubmitIsLoading] = useState(false);
   //pegando o estado do sheets
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
+  //salvando lista reservas do dia no useState
+  const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+
+  // sempre que mudar o dia, atualizar a lista de horários
+  useEffect(() => {
+    if (!date) {
+      return;
+    }
+    //pegando as reservas do dia selecionado
+    const refreshAvailableHours = async () => {
+      const _dayBookings = await getDayBooking(barbershop.id, date);
+
+      setDayBookings(_dayBookings);
+    };
+    //atualizar os horários
+    refreshAvailableHours();
+    router.refresh();
+  }, [date, barbershop.id]);
 
   //função para caso o user não estiver logado redirecione para o login
   const handleBookingClick = () => {
@@ -48,10 +71,6 @@ const ServiceItem = ({
     }
     // TODO abrir modal de agendamento
   };
-  // armazenando a data selecionada no calendario
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  //armazenando o horário selecionado
-  const [hour, setHour] = useState<string | undefined>();
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -63,10 +82,40 @@ const ServiceItem = ({
     setHour(time);
   };
 
-  //criando lista de horários, com o nosso arquivo hours.ts
-  const timeList = useMemo(() => {
-    return date ? generateDayTime(date) : [];
-  }, [date]);
+  // Criando uma lista de horários com base na data selecionada, utilizando o arquivo hours.ts
+const timeList = useMemo(() => {
+  // Se nenhuma data estiver selecionada, retorna uma lista vazia
+  if (!date) {
+    return [];
+  }
+
+  /**
+   * Caso contrário, filtramos os horários disponíveis para agendamento,
+   * mostrando apenas aqueles que ainda não foram reservados.
+   */
+  return generateDayTime(date).filter((time) => {
+    // Extrai a hora e os minutos do horário atual
+    const timeHour = Number(time.split(":")[0]);
+    const timeMinutes = Number(time.split(":")[1]);
+
+    // Verifica se há algum agendamento na lista "dayBookings" com a mesma hora e minutos
+    const booking = dayBookings.find((booking) => {
+      const bookingHour = booking.date.getHours();
+      const bookingMinutes = booking.date.getMinutes();
+
+      // Retorna verdadeiro se a reserva for encontrada nesse horário específico
+      return bookingHour === timeHour && bookingMinutes === timeMinutes;
+    });
+
+    // Se não houver reserva para esse horário, inclui-o na lista de horários disponíveis
+    if (!booking) {
+      return true;
+    }
+
+    // Caso contrário, exclui o horário da lista, pois já está reservado
+    return false;
+  });
+}, [date, dayBookings]);
 
   //funcao de salvar a reserva na tabela booking
   const handleBookingSubmit = async () => {
@@ -97,8 +146,8 @@ const ServiceItem = ({
       //fechar o sheets ao finalizar a reserva
       setSheetIsOpen(false);
       //tirando os dados de data e hora depois de finalizar a reserva
-      setHour(undefined)
-      setDate(undefined)
+      setHour(undefined);
+      setDate(undefined);
       //toast de sucesso
       toast("Reserva realizada com sucesso!", {
         description: format(
@@ -119,16 +168,6 @@ const ServiceItem = ({
       setSubmitIsLoading(false);
     }
   };
-
-  const testeToast = async () => {
-    toast("Reserva realizada com sucesso!", {
-      description: "teste testado",
-      action: {
-        label: "Visualizar",
-        onClick: () => console.log("Undo"),
-      },
-    });
-  }
 
   return (
     <div>
