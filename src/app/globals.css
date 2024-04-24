@@ -38,13 +38,14 @@
   /* width */
 ::-webkit-scrollbar {
   width: 5px;
-  height: 0.5rem;
+  height: 0.4rem;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   background: 225 9% 9%;
   border-radius: 5px;
+  
 }
 
 /* Handle */

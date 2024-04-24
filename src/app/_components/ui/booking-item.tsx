@@ -1,7 +1,7 @@
 import { Booking, Prisma } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Badge } from "./badge";
-import { Card, CardContent } from "./card";
+import { Card, CardContent, CardFooter } from "./card";
 import { format, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -20,7 +20,7 @@ const BookingItem = ({booking}:BookingItemProps) => {
     return ( 
         <div className="">
             <Card>
-                <CardContent className="px-5 py-0 flex justify-between">
+                <CardContent className="px-5 py-0 flex justify-between min-w-[20rem]">
                     <div className="flex flex-col gap-2 py-5">
                         <Badge variant={bookingIsFuture ? "default" : "destructive"} className="pointer-events-none w-fit"> 
                         {isPast(booking.date) ? "Finalizado" : "Confirmado"}
@@ -39,7 +39,7 @@ const BookingItem = ({booking}:BookingItemProps) => {
 
                     </div>
                     {/* data e horário */}
-                    <div className="flex flex-col justify-center items-center border-l border-solid border-secondary px-3 min-w-[8rem]">
+                    <div className="flex flex-col justify-center items-center border-l border-solid border-secondary px-3 min-w-[6rem]">
                         <p className="text-sm capitalize">{format(booking.date, "MMMM", {
                             locale: ptBR
                         })}</p>
