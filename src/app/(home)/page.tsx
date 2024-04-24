@@ -5,17 +5,18 @@ import Search from "./_components/search";
 import BookingItem from "../_components/ui/booking-item";
 import { db } from "../lib/prisma";
 import BarbershopItem from "./_components/barbershop-item";
+import UserName from "../_components/ui/user-name";
 
 export default async function Home() {
   //chamar o prisma e localizar as barbearias cadastradas no BD
   const barbershops = await db.barbershop.findMany({})
-
+  
   return (
     <div>
       <Header />
 
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá Mundo</h2>
+        <UserName />
         <p className="capitalize text-sm">
           {format(new Date(), "EEEE ',' dd 'de' MMMM ", {
             locale: ptBR,
@@ -27,12 +28,12 @@ export default async function Home() {
         <Search />
       </div>
 
-      <div className="px-5 mt-6">
+      {/* <div className="px-5 mt-6">
         <h2 className="uppercase text-sm text-gray-400 mb-3 mt-3">
           Agendamentos
         </h2>
         <BookingItem />
-      </div>
+      </div> */}
 
       <div className="mt-6 px-5">
         <h2 className="uppercase text-sm text-gray-400 mb-3 mt-3">Recomendados</h2>

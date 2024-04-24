@@ -28,7 +28,7 @@ const Header = () => {
     <div>
       <Card>
         <CardContent className="p-5 justify-between flex flex-row items-center">
-          <Image src="/logo.png" alt="imagem" height={22} width={120} />
+          <Link href={"/"}><Image src="/logo.png" alt="imagem" height={22} width={120} /></Link>
           <Sheet>
             <SheetTrigger>
               <Button variant="outline" size="icon" className="h-8 w-8">
