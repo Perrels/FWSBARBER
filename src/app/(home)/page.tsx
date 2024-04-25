@@ -27,6 +27,9 @@ export default async function Home() {
           gte: new Date()
         }
       },
+      orderBy: {
+        date: "asc"
+      },
       include: {
         service: true,
         barbershop: true,

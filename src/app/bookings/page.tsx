@@ -43,7 +43,9 @@ const BookingsPage = async () => {
       <div className="px-4 py-4">
         <h1 className="text-xl font-bold py-3">Agendamentos</h1>
         <hr />
-        <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">Confirmados</h2>
+        {confirmedBookings.length > 0 && (
+          <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">Confirmados</h2>
+        )}
             {/* iterando os bookings encontrados confirmados */}
             {confirmedBookings.map((booking) => (
                 <div className="py-2">
