@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
-import { cn } from "@/app/lib/utils.ts"
+import { cn } from "@/app/lib/utils"
 import { buttonVariants } from "@/app/_components/ui/button"
 
 const AlertDialog = AlertDialogPrimitive.Root
@@ -104,7 +104,11 @@ const AlertDialogAction = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants(), className)}
+    className={cn(buttonVariants(
+      {
+        variant:"destructive"
+      }
+    ), className)}
     {...props}
   />
 ))

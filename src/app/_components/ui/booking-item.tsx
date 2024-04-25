@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Booking, Prisma } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
@@ -21,6 +21,17 @@ import { cancelBooking } from "@/app/actions/cancel-booking";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./alert-dialog";
 
 // interface para pegar os Bookings
 interface BookingItemProps {
@@ -39,22 +50,21 @@ const BookingItem = ({ booking }: BookingItemProps) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   //funcao de cancelar o agendamento
-  const handleCancelBooking = async () =>  {
+  const handleCancelBooking = async () => {
     //criando o state of loading to button
-    setIsDeleteLoading(true)
+    setIsDeleteLoading(true);
     try {
       // chama a funcao e passamos o id do booking para que o cancelamento seja feito
       await cancelBooking(booking.id);
-      toast.success("Reserva cancelada com sucesso!")
+      toast.success("Reserva cancelada com sucesso!");
     } catch (error) {
-      console.error(error)
-      toast.error(`${error}`)
-    }
-    finally{
+      console.error(error);
+      toast.error(`${error}`);
+    } finally {
       //disabling the state of loading
-      setIsDeleteLoading(false)
+      setIsDeleteLoading(false);
     }
-  }
+  };
   return (
     <div className="">
       <Sheet>
@@ -171,13 +181,41 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                 {/* TODO WHATSAPP BUTTON */}
                 {/* botao de fechar o sheet */}
                 <SheetClose>
-                  <Button variant={"secondary"} className="w-full"><ChevronLeft /> Voltar</Button>
-                </SheetClose>
-                {/* BOTÃO DESABILITADO CASO A RESERVA não for futura(confirmada)*/}
-                <Button onClick={handleCancelBooking} disabled={!bookingIsFuture} variant={"destructive"} className="w-full">
-                  {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4"/>}
-                  Cancelar Reserva
+                  <Button variant={"secondary"} className="w-full">
+                    <ChevronLeft /> Voltar
                   </Button>
+                </SheetClose>
+                {/* alerta de confirmação de cancelamento da reserva */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    {/* BOTÃO DESABILITADO CASO A RESERVA não for futura(confirmada)*/}
+                    <Button
+                      disabled={!bookingIsFuture}
+                      variant={"destructive"}
+                      className="w-full"
+                    >
+                      {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4" />}
+                      Cancelar Reserva
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="w-[90%]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Gostaria realmente de cancelar?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Essa ação não pode ser desfeita.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-row gap-4">
+                      <AlertDialogCancel className="w-full mt-0">Voltar</AlertDialogCancel>
+                      <AlertDialogAction disabled={isDeleteLoading} className="w-full" onClick={handleCancelBooking}>
+                        {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4" />} 
+                        Confirmar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </SheetFooter>
           </div>

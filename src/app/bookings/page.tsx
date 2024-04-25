@@ -25,18 +25,22 @@ const BookingsPage = async () => {
     where: {
       userId: (session.user as any).id,
     },
-    orderBy:{
-        date: "desc"
+    orderBy: {
+      date: "desc",
     },
-    include:{
-        service:true,
-        barbershop: true
-    }
+    include: {
+      service: true,
+      barbershop: true,
+    },
   });
-    // filtrando os bookings confirmados
-    const confirmedBookings = userBookings.filter((booking) => isFuture(booking.date))
-    // filtrandos os bookings finalizados   
-    const finishedBookings = userBookings.filter((booking) => isPast(booking.date))
+  // filtrando os bookings confirmados
+  const confirmedBookings = userBookings.filter((booking) =>
+    isFuture(booking.date)
+  );
+  // filtrandos os bookings finalizados
+  const finishedBookings = userBookings.filter((booking) =>
+    isPast(booking.date)
+  );
   return (
     <>
       <Header />
@@ -44,24 +48,29 @@ const BookingsPage = async () => {
         <h1 className="text-xl font-bold py-3">Agendamentos</h1>
         <hr />
         {confirmedBookings.length > 0 && (
-          <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">Confirmados</h2>
+          <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">
+            Confirmados
+          </h2>
         )}
-            {/* iterando os bookings encontrados confirmados */}
-            {confirmedBookings.map((booking) => (
-                <div className="py-2">
-                    <BookingItem key={booking.id} booking={booking}/>
-                </div>
-            ))}
-            <hr />
-            {/* iterados e já finalizados */}
-            <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">Finalizados</h2>
-            {/* iterando os bookings encontrados confirmados */}
-            {finishedBookings.map((booking) => (
-                <div className="py-2">
-                    <BookingItem key={booking.id} booking={booking}/>
-                </div>
-            ))}
-
+        {/* iterando os bookings encontrados confirmados */}
+        {confirmedBookings.map((booking) => (
+          <div className="py-2">
+            <BookingItem key={booking.id} booking={booking} />
+          </div>
+        ))}
+        <hr />
+        {/* iterados e já finalizados */}
+        {finishedBookings.length > 0 && (
+          <h2 className="text-gray-400 font-bold text-sm uppercase pt-4">
+            Finalizados
+          </h2>
+        )}
+        {/* iterando os bookings encontrados confirmados */}
+        {finishedBookings.map((booking) => (
+          <div className="py-2">
+            <BookingItem key={booking.id} booking={booking} />
+          </div>
+        ))}
       </div>
     </>
   );
