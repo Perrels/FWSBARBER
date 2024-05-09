@@ -11,8 +11,7 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function Home() {
   //get authenticated user session
-  const session = await getServerSession(authOptions)
-
+  const session = await getServerSession(authOptions);
 
   //using promisse to run parallel querys with promisse
   const [barbershops, bookings] = await Promise.all([
@@ -20,31 +19,36 @@ export default async function Home() {
     db.barbershop.findMany({}),
     //call user`s bookings
     // if user is authenticated show bookings else show a empty array
-    session?.user ? db.booking.findMany({
-      where:{
-        userId: (session.user as any).id,
-        date:{
-          gte: new Date()
-        }
-      },
-      orderBy: {
-        date: "asc"
-      },
-      include: {
-        service: true,
-        barbershop: true,
-      }
-    }) : Promise.resolve([]),
+    session?.user
+      ? db.booking.findMany({
+          where: {
+            userId: (session.user as any).id,
+            date: {
+              gte: new Date(),
+            },
+          },
+          orderBy: {
+            date: "asc",
+          },
+          include: {
+            service: true,
+            barbershop: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
 
-  ])
-  
   return (
     <div>
       <Header />
 
       <div className="p-5">
         {/* <UserName /> */}
-        <h2 className="text-xl font-bold">{session?.user ? `Olá, ${session.user.name?.split(" ")[0]}!` : "Olá! Vamos agendar um corte?" }</h2>
+        <h2 className="text-xl font-bold">
+          {session?.user
+            ? `Olá, ${session.user.name?.split(" ")[0]}!`
+            : "Olá! Vamos agendar um corte?"}
+        </h2>
         <p className="capitalize text-sm">
           {format(new Date(), "EEEE ',' dd 'de' MMMM ", {
             locale: ptBR,
@@ -60,21 +64,24 @@ export default async function Home() {
         <h2 className="uppercase text-sm text-gray-400 mb-3 mt-3">
           Agendamentos
         </h2>
-          {/* iterando os agendamentos */}
+        {/* iterando os agendamentos */}
         <div className="flex gap-3 overflow-x-auto">
           {bookings.map((booking) => (
-            <BookingItem booking={booking} key={booking.id}/>
+            <BookingItem booking={booking} key={booking.id} />
           ))}
         </div>
-        
       </div>
 
       <div className="mt-6 px-5">
-        <h2 className="uppercase text-sm text-gray-400 mb-3 mt-3">Recomendados</h2>
+        <h2 className="uppercase text-sm text-gray-400 mb-3 mt-3">
+          Recomendados
+        </h2>
         {/* iterando barbershops recomendadas */}
         <div className="flex gap-2 overflow-x-auto">
           {barbershops.map((barbershop) => (
-            <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+            <div className="min-w-[167px] max-w-[167px]">
+              <BarbershopItem key={barbershop.id}  barbershop={barbershop} />
+            </div>
           ))}
         </div>
       </div>
@@ -84,11 +91,12 @@ export default async function Home() {
         {/* iterando barbershops populares */}
         <div className="flex gap-2 overflow-x-auto">
           {barbershops.map((barbershop) => (
-            <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+            <div className="min-w-[167px] max-w-[167px]">
+              <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+            </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 }
